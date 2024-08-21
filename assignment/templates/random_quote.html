@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Random Quote{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-colum mx-auto">
+    <div class="my-8">
+        <div class="mx-auto">
+            <h2 class="text-2xl font-bold my-4">Random Quote</h2>
+        </div>
+        <div class="background-image">
+            <div class="font-serif text-xl">
+                {{ quote.author }} -
+            </div>
+            <div class="font-serif text-xl">
+                "{{ quote.quote }}"
+            </div>
+        </div>
+    </div>
+    <div>
+
+    </div>
+    <div class="my-8">
+        <div>
+            Like this quote? Click on the heart to save it to your favorites.
+        </div>
+        <form method="POST" action="like_quote">
+            <input type="submit" value="GO"/>
+        </form>
+        <a href=""><img src="{% static 'images/heartblack.png' %}" alt="a black heart"></a>
+    </div>
+</div>
+
+{% endblock %}

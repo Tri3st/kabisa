@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Welcome{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com" rel="stylesheet"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="flex flex-col h-screen bg-gray-100 font-sans" style="background-image: url('../static/images/paper.png')">
+
+<nav class="h-15 bg-blue-600 p-4 text-white flex justify-between">
+    <div>
+        <h1 class="text-3xl font-bold">Random Quote</h1>
+    </div>
+    <div>
+        <div>
+            {% if user.is_authenticated %}
+                <a href="#" class="text-white hover:underline">Welcome {{ user.username }}</a>
+                <a href="logout" class="text-white hover:underline">Logout</a>
+            {% else %}
+                <a href="login" class="text-white hover:underline">Login</a>
+                <a href="signup" class="text-white hover:underline">Signup</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% block content %}
+
+{% endblock %}
+<footer class="h-10 text-center p-4 text-black mt-6 text-xs sticky top-[100vh]">
+    Powered by Martin van Diest&copy; 2024
+</footer>
+</body>
+</html>
