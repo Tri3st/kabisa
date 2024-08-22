@@ -21,12 +21,14 @@ def get_quotes():
             })
     return quotes
 
+
 def index(request):
     """show a rondom quote"""
     nr_of_quotes = Quote.objects.all().count()
     random_index = randint(0, nr_of_quotes)
     quote = Quote.objects.get(pk=random_index)
     return render(request, 'random_quote.html', {'quote': quote})
+
 
 @csrf_exempt
 def quote_list(request):
@@ -42,6 +44,7 @@ def quote_list(request):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
 
 @csrf_exempt
 def quote_detail(request, pk):
@@ -67,6 +70,7 @@ def quote_detail(request, pk):
         quote.delete()
         return HttpResponse(status=204)
 
+
 @csrf_exempt
 def quote_detail_xml(request, pk):
     """retrieve a quote in xml format"""
@@ -88,11 +92,7 @@ def quote_detail_like(request, pk):
 
     return HttpResponse(status=400)
 
-# def random_quote(request):
-#     quotes = Quote.objects.all()
-#     random_index = randint(0, len(quotes))
-#     quote = quotes[random_index]
-#     return render(request, 'random_quote.html', {'quote': quote})
+
 def random_quote(request):
     """show a rondom quote"""
     nr_of_quotes = Quote.objects.count()
@@ -107,3 +107,7 @@ def random_quote(request):
         serializer = QuoteSerializer(quote)
         return JsonResponse(serializer.data)
 
+
+def show_quotes_in_order_of_likes(request):
+    """show quotes in order of likes"""
+    pass
