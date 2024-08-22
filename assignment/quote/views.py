@@ -9,6 +9,8 @@ from .serializers import QuoteSerializer
 
 # Create your views here.
 def get_quotes():
+    """get quotes from json file"""
+    # TODO get more quotes online and merg these files
     quotes = []
     with open('./assignment/static/json/quotes.json') as f:
         for line in f:
@@ -67,6 +69,7 @@ def quote_detail(request, pk):
 
 @csrf_exempt
 def quote_detail_xml(request, pk):
+    """retrieve a quote in xml format"""
     pass
 
 
