@@ -1,5 +1,10 @@
 # Kabisa Assignment
 
+= Author: Martin van Diest
+= Date: 22-08-2024
+= Estimated time spent on assignment: 5 hours
+
+
 ## The assignment
 
 The assignment was to create a web service. To generate random quotes from famouse people.
