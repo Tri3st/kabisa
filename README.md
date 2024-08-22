@@ -29,14 +29,19 @@ Looking forward to our talk.
 
 - fork the repository
 
-- run the docker in the ./docker directory with `docker compose -f docker-compose.yml up --build
+- run the docker in the ./docker directory 
+```[bash]
+$ docker compose -f docker-compose.yml up --build
+```
+
+- cd ./assignment
 
 - first time django :
 
 ```[bash]
 $ python3 manage.py makemigrations
 $ python3 manage.py migrate
-$ python3 manage.py collectstatic -y
+$ python3 manage.py collectstatic --noinput
 $ python3 manage.py runserver 0.0.0.0:8001
 ```
 
