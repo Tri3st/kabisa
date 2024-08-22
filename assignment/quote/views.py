@@ -43,6 +43,7 @@ def quote_list(request):
 
 @csrf_exempt
 def quote_detail(request, pk):
+    """Retrieve, update or delete a quote"""
     try:
         quote = Quote.objects.get(pk=pk)
     except Quote.DoesNotExist:
@@ -71,6 +72,7 @@ def quote_detail_xml(request, pk):
 
 @csrf_exempt
 def quote_detail_like(request, pk):
+    """like a quote"""
     try:
         quote = Quote.objects.get(pk=pk)
     except Quote.DoesNotExist:
@@ -90,12 +92,15 @@ def quote_detail_like(request, pk):
 #     return render(request, 'random_quote.html', {'quote': quote})
 def random_quote(request):
     """show a rondom quote"""
+    nr_of_quotes = Quote.objects.count()
+    random_index = randint(0, nr_of_quotes)
+
+    try:
+        quote = Quote.objects.get(pk=random_index)
+    except Quote.DoesNotExist:
+        return HttpResponse(status=404)
+
     if request.method == 'GET':
-        quotes = Quote.objects.all()
-        random_index = randint(0, len(quotes))
-        try:
-            quote = Quote.objects.get(pk=random_index)
-            serializer = QuoteSerializer(quote, many=True)
-            return JsonResponse(serializer.data[0], safe=False)
-        except Quote.DoesNotExist:
-            return JsonResponse({'error': 'Quote not found'}, status=404)
+        serializer = QuoteSerializer(quote)
+        return JsonResponse(serializer.data)
+
