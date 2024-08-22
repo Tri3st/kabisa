@@ -63,3 +63,39 @@ def quote_detail(request, pk):
     elif request.method == 'DELETE':
         quote.delete()
         return HttpResponse(status=204)
+
+@csrf_exempt
+def quote_detail_xml(request, pk):
+    pass
+
+
+@csrf_exempt
+def quote_detail_like(request, pk):
+    try:
+        quote = Quote.objects.get(pk=pk)
+    except Quote.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'POST':
+        quote.likes += 1
+        quote.save()
+        return HttpResponse(status=200)
+
+    return HttpResponse(status=400)
+
+# def random_quote(request):
+#     quotes = Quote.objects.all()
+#     random_index = randint(0, len(quotes))
+#     quote = quotes[random_index]
+#     return render(request, 'random_quote.html', {'quote': quote})
+def random_quote(request):
+    """show a rondom quote"""
+    if request.method == 'GET':
+        quotes = Quote.objects.all()
+        random_index = randint(0, len(quotes))
+        try:
+            quote = Quote.objects.get(pk=random_index)
+            serializer = QuoteSerializer(quote, many=True)
+            return JsonResponse(serializer.data[0], safe=False)
+        except Quote.DoesNotExist:
+            return JsonResponse({'error': 'Quote not found'}, status=404)
