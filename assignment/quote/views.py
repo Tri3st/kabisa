@@ -1,3 +1,4 @@
+import re
 from random import randint
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -5,12 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from .models import Quote
 from .serializers import QuoteSerializer
+from openai import OpenAI
 
 
 # Create your views here.
 def get_quotes():
     """get quotes from json file"""
-    # TODO get more quotes online and merg these files
+    # TODO get more quotes online and merge these into tge database
     quotes = []
     with open('./assignment/static/json/quotes.json') as f:
         for line in f:
@@ -20,6 +22,52 @@ def get_quotes():
                 'quote': qline[1]
             })
     return quotes
+
+def get_some_more_quotes(number=10):
+    """
+    get some files from openai
+    first we get some quotes from OpenAI, then we format the quotes to fit our database
+    then we check if the quote exists (TODO this check must be implemented better)
+    if the quote does not exist, we add it to the database
+    """
+    client = OpenAI(
+        organization="org-6X4qNlDdQVxVHwXHw4EMs6qd",
+        project="proj_nGvsxdEL8zsn17hQyEmYse6O"
+    )
+    stream = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role":"user","content":f"Generate {number} quotes from famous people"}],
+        stream=True,
+    )
+
+    for chunk in stream:
+        print(chunk)
+        if chunk.choices[0].delta.content is not None:
+
+            raw_quotes_text = chunk.choices[0].delta.content
+            quotes = raw_quotes_text.split("\n\n")
+            # a quote is given as "1. **<author>**: <quote>"
+            # the first line is the introduction and the last one is a sumary
+            quotes_to_add = []
+            for quote in quotes[1:-1]:
+                # get author and quote
+                q2 = quote.split(":")
+                regex = re.findall(r"^\d+\. \*\*([a-zA-Z .]+)\*\*$", q2[0])
+                author = regex[0]
+                regex2 = re.findall(r"^\s*“([a-zA-Z ,.:!’?]+)”$", q2[1])
+                readable_quote = regex2[0].replace("’", "\'").strip()
+                qq = {
+                    'author': author,
+                    'quote': str(readable_quote)
+                }
+                print(qq)
+                quotes_to_add.append(qq)
+            # check if quote already exists in database
+            # if not, add it to the database
+            for q in quotes_to_add:
+                if not Quote.objects.filter(quote=q['quote']).exists():
+                    Quote.objects.create(author=q['author'], quote=q['quote'])
+                    print(f"Added quote: {q['quote']}")
 
 
 def index(request):
@@ -32,6 +80,7 @@ def index(request):
 
 @csrf_exempt
 def quote_list(request):
+    """List all quotes or create a new quote"""
     if request.method == 'GET':
         quotes = Quote.objects.all()
         serializer = QuoteSerializer(quotes, many=True)
@@ -80,15 +129,16 @@ def quote_detail_xml(request, pk):
 @csrf_exempt
 def quote_detail_like(request, pk):
     """like a quote"""
-    try:
-        quote = Quote.objects.get(pk=pk)
-    except Quote.DoesNotExist:
-        return HttpResponse(status=404)
-
     if request.method == 'POST':
-        quote.likes += 1
-        quote.save()
-        return HttpResponse(status=200)
+        qid = request.form['quote.id']
+
+        try:
+            quote = Quote.objects.get(pk=qid)
+            quote.likes += 1
+            quote.save()
+            return HttpResponse(status=200)
+        except Quote.DoesNotExist:
+            return HttpResponse(status=404)
 
     return HttpResponse(status=400)
 
@@ -111,3 +161,4 @@ def random_quote(request):
 def show_quotes_in_order_of_likes(request):
     """show quotes in order of likes"""
     pass
+
