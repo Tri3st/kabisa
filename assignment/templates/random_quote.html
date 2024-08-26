@@ -26,10 +26,18 @@
         <div>
             Like this quote? Click on the heart to save it to your favorites.
         </div>
-        <form method="POST" action="like_quote">
-            <input type="submit" value="GO"/>
+        <form method="POST" action="quote_detail_like">
+            <button type="submit"><img src="{% static 'images/heartblack.png' %}" alt="a black heart"></button>
         </form>
-        <a href=""><img src="{% static 'images/heartblack.png' %}" alt="a black heart"></a>
+    </div>
+
+    <div class="border-1 border-amber-600 border-radius-">
+        <form method="POST" action="add_quotes">
+            <div>
+                Add more quotes to the database.
+                <input type="submit" value="ADD" />
+            </div>
+        </form>
     </div>
 </div>
 
