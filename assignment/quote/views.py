@@ -129,18 +129,20 @@ def quote_detail_xml(request, pk):
 @csrf_exempt
 def quote_detail_like(request, pk):
     """like a quote"""
+    # TODO not finished!
+    try:
+        quote = Quote.objects.get(pk=pk)
+    except Quote.DoesNotExist:
+        return HttpResponse(status=404)
+
     if request.method == 'POST':
-        qid = request.form['quote.id']
+        data = JSONParser().parse(request)
+        serializer = QuoteSerializer(quote, data=data)
+        quote.likes += 1
+        quote.save()
+        return JsonResponse(serializer.data, status=200)
 
-        try:
-            quote = Quote.objects.get(pk=qid)
-            quote.likes += 1
-            quote.save()
-            return HttpResponse(status=200)
-        except Quote.DoesNotExist:
-            return HttpResponse(status=404)
-
-    return HttpResponse(status=400)
+    return JsonResponse(status=400)
 
 
 def random_quote(request):
@@ -160,5 +162,6 @@ def random_quote(request):
 
 def show_quotes_in_order_of_likes(request):
     """show quotes in order of likes"""
-    pass
+    # we want to get the top 3 of the django database entries based on the number of likes
+    quotes = Quote.objects.order_by('-likes')[:3]
 
